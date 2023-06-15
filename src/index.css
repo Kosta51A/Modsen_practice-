@@ -1,13 +1,39 @@
+header {
+  text-align: center;
+  background: antiquewhite;
+}
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.List {
+  display: grid;
+  margin: 20px 0 50px 0;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  grid-gap: 1em;
+}
+
+.card-container {
+  width: 100%;
+  border: 1px solid;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .List {
+    grid-template-columns: repeat(2, 1fr); /* Изменение на 2 столбца на узких экранах */
+  }
+}
+@media (max-width: 480px) {
+  .List {
+    grid-template-columns: 1fr; /* Один столбец на очень узких экранах */
+  }
 }
