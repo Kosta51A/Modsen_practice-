@@ -34,7 +34,7 @@ class Books extends Component{
     cleanData =(data)=>{
          const cleanedData = data.body.items.map((book)=> {
              if(    book.volumeInfo.hasOwnProperty('publishedDate') === false){
-                 book.volumeInfo['publishedDate']='0000';
+                 book.volumeInfo['publishedDate']='No date';
              }
              else if(book.volumeInfo.hasOwnProperty('imageLinks') === false) {
                 book.volumeInfo['imageLinks'] = {thumbnail: 'https://en.wikipedia.org/wiki/File:No_image_available.svg'}
