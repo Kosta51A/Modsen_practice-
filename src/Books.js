@@ -1,61 +1,103 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import SearchArea from "./SearchArea";
 import request from "superagent";
 import BookList from "./BookList";
-class Books extends Component{
+import {NO_IMAGE, API_URL} from "./config";
+class Books extends Component {
     constructor(props) {
         super(props);
-        this.state={
-            books:[],
-            searchField:'',
-            sort: ''
-        }
+        this.state = {
+            books: [],
+            searchField: "",
+            category: "all",     //
+            sort: "",
+            startIndex: 0, // Начальный индекс для пагинации
+            totalBooks: 0
+        };
     }
 
-    searchBook = (e)=>{
+    searchBook = (e) => {
         e.preventDefault();
+        const maxResults = 30;
+        const startIndex = 0; // Сброс начального индекса при новом поиске
+
         request
-            .get("https://www.googleapis.com/books/v1/volumes")
-            .query({q: this.state.searchField})
-            .then((data)=>{
+            .get(API_URL)
+            .query({ q: this.state.searchField, maxResults, startIndex, })
+            .then((data) => {
                 console.log(data);
-                const cleanData =this.cleanData(data)
-                this.setState({books:cleanData})         //[...data.body.items]
-            })
+                const cleanData = this.cleanData(data);
+                this.setState({ books: cleanData, startIndex: maxResults, totalBooks: data.body.totalItems,});  //totalbooks
+            });
+    };
 
-    }
+    loadMoreBooks = () => {
+        const { searchField, startIndex } = this.state;
+        const maxResults = 30;
+        const newStartIndex = startIndex + maxResults;
+
+        request
+            .get(API_URL)
+            .query({ q: searchField, maxResults, startIndex: newStartIndex,}) // Использование нового startIndex для загрузки следующих результатов
+            .then((data) => {
+                const newBooks = this.cleanData(data);
+                this.setState((prevState) => ({
+                    books: [...prevState.books, ...newBooks],
+                    startIndex: newStartIndex, // Обновление startIndex для следующей пагинации
+                }));
+            });
+    };
+
     handleSearch = (e) => {
-        this.setState({searchField:e.target.value})    // 4 updating
-}
-    handleSort = (e)=>{
-        this.setState({sort: e.target.value})
-    }
+        this.setState({ searchField: e.target.value });
+    };
 
-    cleanData =(data)=>{
-         const cleanedData = data.body.items.map((book)=> {
-             if(    book.volumeInfo.hasOwnProperty('publishedDate') === false){
-                 book.volumeInfo['publishedDate']='No date';
-             }
-             else if(book.volumeInfo.hasOwnProperty('imageLinks') === false) {
-                book.volumeInfo['imageLinks'] = {thumbnail: 'https://en.wikipedia.org/wiki/File:No_image_available.svg'}
-             }
-             return book;
-        })
+    handleSort = (e) => {
+        this.setState({ sort: e.target.value });
+    };
+
+    cleanData = (data) => {
+        const cleanedData = data.body.items.map((book) => {
+            if (!book.volumeInfo.hasOwnProperty("publishedDate")) {
+                book.volumeInfo["publishedDate"] = "No date";
+            } else if (!book.volumeInfo.hasOwnProperty("imageLinks")) {
+                book.volumeInfo["imageLinks"] = {
+                    thumbnail: (NO_IMAGE)
+                };
+            }
+            return book;
+        });
         return cleanedData;
-    }
+    };
+
+
     render() {
-        const sortedBooks = this.state.books.sort((a,b) => {
-            if(this.state.sort==='Newest')
-                return parseInt(b.volumeInfo.publishedDate.substring(0,4))  -  parseInt(a.volumeInfo.publishedDate.substring(0,4))
-            else if(this.state.sort==='Oldest')
-                return parseInt(a.volumeInfo.publishedDate.substring(0,4))  -  parseInt(b.volumeInfo.publishedDate.substring(0,4))
-
-        })
-
+        const sortedBooks = this.state.books.sort((a, b) => {
+            if (this.state.sort === "Newest")
+                return (
+                    parseInt(b.volumeInfo.publishedDate.substring(0, 4)) -
+                    parseInt(a.volumeInfo.publishedDate.substring(0, 4))
+                );
+            else if (this.state.sort === "Oldest")
+                return (
+                    parseInt(a.volumeInfo.publishedDate.substring(0, 4)) -
+                    parseInt(b.volumeInfo.publishedDate.substring(0, 4))
+                );
+        });
+//декомпонизация
         return (
             <div>
-            <SearchArea  searchBook={this.searchBook} handleSearch ={this.handleSearch} handleSort={this.handleSort}/>
-            <BookList  books={sortedBooks}/>
+                <SearchArea
+                    searchBook={this.searchBook}
+                    handleSearch={this.handleSearch}
+                    handleCategory={this.handleCategory} //
+                    handleSort={this.handleSort}
+                    totalBooks={this.state.totalBooks}
+                />
+                <BookList books={sortedBooks} />
+                {this.state.books.length > 0 && (
+                    <button onClick={this.loadMoreBooks}>Load More</button>
+                )}
             </div>
         );
     }

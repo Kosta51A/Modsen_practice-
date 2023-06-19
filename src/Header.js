@@ -2,7 +2,7 @@ import React from "react";
 const Header = () =>{
     return(
         <header>
-            <h1>book card</h1>
+            <h1>books</h1>
 
         </header>
     )
