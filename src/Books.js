@@ -59,7 +59,7 @@ class Books extends Component {
     cleanData = (data) => {
         const cleanedData = data.body.items.map((book) => {
             if (!book.volumeInfo.hasOwnProperty("publishedDate")) {
-                book.volumeInfo["publishedDate"] = "No date";
+                book.volumeInfo["publishedDate"] = "";
             } else if (!book.volumeInfo.hasOwnProperty("imageLinks")) {
                 book.volumeInfo["imageLinks"] = {
                     thumbnail: (NO_IMAGE)
@@ -84,7 +84,6 @@ class Books extends Component {
                     parseInt(b.volumeInfo.publishedDate.substring(0, 4))
                 );
         });
-//декомпонизация
         return (
             <div>
                 <SearchArea
@@ -96,7 +95,7 @@ class Books extends Component {
                 />
                 <BookList books={sortedBooks} />
                 {this.state.books.length > 0 && (
-                    <button onClick={this.loadMoreBooks}>Load More</button>
+                    <button onClick={this.loadMoreBooks} className="loadMore-button">Load More</button>
                 )}
             </div>
         );

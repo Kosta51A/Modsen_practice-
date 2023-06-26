@@ -1,16 +1,17 @@
-import React, {Component} from "react";
-import Header from "./Header";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Books from "./Books";
+import BookDetails from "./BookDetails";
 
-class App extends Component{
-  render() {
+const App = () => {
     return (
-        <div className="App">
-          <Header />
-            <Books />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Books />} />
+                <Route path="/books/:id" element={<BookDetails />} />
+            </Routes>
+        </Router>
     );
-  }
-}
+};
 
 export default App;
