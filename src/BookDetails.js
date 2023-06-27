@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import request from "superagent";
-import { NO_IMAGE } from "./config";
 
 const BookDetails = () => {
     const { id } = useParams();
@@ -30,6 +29,8 @@ const BookDetails = () => {
 
     const { title, authors, publishedDate, description, imageLinks, categories } = book.volumeInfo;
 
+
+
     return (
         <div>
             <h2>{title}</h2>
@@ -38,9 +39,12 @@ const BookDetails = () => {
             <p>Categories: {categories ? categories.join(", ") : "No categories"}</p>
             <div style={{ display: "flex" }}>
                 <img
-                    src={imageLinks?.thumbnail || NO_IMAGE}
-                    alt={title}
-                    style={{ width: "115%", height: "auto", marginRight: "20px" }}
+                    src={imageLinks?.thumbnail || "/images/img_1.png"}
+                    style={{
+                        width: description ? "300%" : "30%",
+                        height: "auto",
+                        marginRight: "20px",
+                    }}
                 />
                 <div>
                     <p>Description: {description || "No description available"}</p>

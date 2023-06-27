@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import SearchArea from "./SearchArea";
 import request from "superagent";
 import BookList from "./BookList";
-import {NO_IMAGE, API_URL} from "./config";
+import {API_URL} from "./config";
 class Books extends Component {
     constructor(props) {
         super(props);
@@ -11,15 +11,21 @@ class Books extends Component {
             searchField: "",
             category: "all",     //
             sort: "",
-            startIndex: 0, // Начальный индекс для пагинации
+            startIndex: 0,
             totalBooks: 0
         };
     }
 
     searchBook = (e) => {
         e.preventDefault();
+        const { searchField } = this.state;
+
+        if (searchField.trim() === "") {
+            return;
+        }
+
         const maxResults = 30;
-        const startIndex = 0; // Сброс начального индекса при новом поиске
+        const startIndex = 0;
 
         request
             .get(API_URL)
@@ -62,7 +68,7 @@ class Books extends Component {
                 book.volumeInfo["publishedDate"] = "";
             } else if (!book.volumeInfo.hasOwnProperty("imageLinks")) {
                 book.volumeInfo["imageLinks"] = {
-                    thumbnail: (NO_IMAGE)
+                    thumbnail: "/images/img_1.png"
                 };
             }
             return book;
